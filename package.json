@@ -1,0 +1,21 @@
+{
+  "name": "nextjs-udemy-1",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev && yarn open-browser",
+    "build": "next build",
+    "start": "next start",
+    "open-browser": "open http://localhost:3000",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "10.0.8",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "swr": "^0.5.5"
+  },
+  "devDependencies": {
+    "prettier": "2.2.1"
+  }
+}
