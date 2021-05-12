@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import EventList from "../../components/events/EventList";
 import ResultsTitle from "../../components/events/results-title";
 import CustomButton from "../../components/ui/custom-button";
 import ErrorAlert from "../../components/ui/error-alert";
-import { getFilteredEvents } from "../../utils/api-data";
 import { transformObjectToArray } from "../../utils/formatter";
 import useSWR from "swr";
 
@@ -36,8 +36,24 @@ const FilteredEvents = () => {
     );
   }
 
+  const pageHeadData = (
+    <Head>
+      <title> Filtered Events </title>
+      <link rel="icon" href="/favicon.ico" />
+      <meta
+        name="description"
+        content={`All events for ${month || ""}/${year || ""}`}
+      />
+    </Head>
+  );
+
   if (!loadedEvents) {
-    return <p>Loading events...</p>;
+    return (
+      <Fragment>
+        {pageHeadData}
+        <p>Loading events...</p>
+      </Fragment>
+    );
   }
 
   const filteredEvents = loadedEvents.filter((event) => {
@@ -49,27 +65,29 @@ const FilteredEvents = () => {
 
   if (error) {
     return (
-      <>
+      <Fragment>
+        {pageHeadData}
         <ErrorAlert>
           <p>Error when fetching events</p>
         </ErrorAlert>
         <div className="center">
           <CustomButton link="/events">Show All Events</CustomButton>
         </div>
-      </>
+      </Fragment>
     );
   }
 
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
-      <>
+      <Fragment>
+        {pageHeadData}
         <ErrorAlert>
           <p className="center">No Events Found</p>
         </ErrorAlert>
         <div className="center">
           <CustomButton link="/events">Show All Events</CustomButton>
         </div>
-      </>
+      </Fragment>
     );
   }
 
@@ -77,6 +95,7 @@ const FilteredEvents = () => {
 
   return (
     <div>
+      {pageHeadData}
       <ResultsTitle date={dateTime} />
       <EventList events={filteredEvents || []} />
     </div>

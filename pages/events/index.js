@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import EventSearch from "../../components/events/event-search";
 import EventList from "../../components/events/EventList";
 import { getAllEvents } from "../../utils/api-data";
@@ -11,6 +12,11 @@ const Events = ({ events }) => {
   };
   return (
     <div>
+      <Head>
+        <title>All Events</title>
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="List of all events" />
+      </Head>
       <EventSearch onSearch={findEventHandler} />
       <EventList events={events} />
     </div>
