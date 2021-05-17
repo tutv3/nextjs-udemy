@@ -4,6 +4,7 @@ import { getEventById, getFeaturedEvents } from "../../utils/api-data";
 import EventSummary from "../../components/events/event-summary";
 import EventContent from "../../components/events/event-content";
 import EventLogistics from "../../components/events/event-logistics";
+import Comments from "../../components/input/comments";
 
 const EventDetail = ({ eventDetail }) => {
   if (!eventDetail) {
@@ -30,6 +31,7 @@ const EventDetail = ({ eventDetail }) => {
       <EventContent>
         <p>{eventDetail.description}</p>
       </EventContent>
+      <Comments eventId={EventDetail.id || ""} />
     </Fragment>
   );
 };
