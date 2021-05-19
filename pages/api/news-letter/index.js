@@ -1,5 +1,5 @@
 import { validateEmail } from "../../../utils/validators";
-import { MongoClient } from "mongodb";
+import { connectDB, insertDocument } from "../../../utils/db";
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -10,18 +10,22 @@ async function handler(req, res) {
         msg: "Email is not in valid format"
       });
     }
+    let client = {};
+    try {
+      client = await connectDB();
+    } catch (error) {
+      return res.status(500).json({
+        msg: "Connecting to db failed"
+      });
+    }
 
-    const client = await MongoClient.connect(process.env.MONGO_CLIENT_URI, {
-      useUnifiedTopology: true
-    });
-
-    const db = client.db();
-
-    await db.collection("users").insertOne({
-      email
-    });
-
-    client.close();
+    try {
+      await insertDocument(client, { email }, "users");
+    } catch (error) {
+      return res.status(500).json({
+        msg: "Inserting to db failed"
+      });
+    }
 
     return res.status(201).json({
       msg: "Registered successfully"

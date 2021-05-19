@@ -14,7 +14,6 @@ function Comments(props) {
       axios
         .get(`/api/comments/${eventId}`)
         .then(({ data }) => {
-          console.log(data);
           setComments(data.cmts || []);
         })
         .catch((err) => {

@@ -1,14 +1,18 @@
 import { validateEmail } from "../../../utils/validators";
-import { MongoClient } from "mongodb";
+import { getAllDocuments, insertDocument, connectDB } from "../../../utils/db";
 
 async function handler(req, res) {
   const { eventId, name, text, email } = req.body;
 
-  const client = await MongoClient.connect(process.env.MONGO_CLIENT_URI, {
-    useUnifiedTopology: true
-  });
+  let client = {};
 
-  const db = client.db();
+  try {
+    client = await connectDB();
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Connecting to db failed"
+    });
+  }
 
   if (req.method === "POST") {
     if (!eventId) {
@@ -30,23 +34,30 @@ async function handler(req, res) {
       email
     };
 
-    const resCmt = await db.collection("comments").insertOne(newComment);
+    let result;
 
-    client.close();
+    try {
+      result = await insertDocument(client, newComment, "comments");
+    } catch (error) {
+      return res.status(500).json({
+        msg: "Inserting comment to db failed"
+      });
+    }
 
     return res.json({
       msg: "Commented successfully",
-      cmt: { _id: resCmt.insertedId, ...newComment }
+      cmt: { _id: result.insertedId, ...newComment }
     });
   }
   if (req.method === "GET") {
-    const resCmts = await db
-      .collection("comments")
-      .find({})
-      .sort({
-        _id: -1
-      })
-      .toArray();
+    const resCmts = await getAllDocuments(
+      client,
+      "comments",
+      { _id: -1 },
+      {
+        eventId: req.query.eventId
+      }
+    );
     return res.json({
       cmts: resCmts
     });
