@@ -1,11 +1,16 @@
 import classes from "./newsletter-registration.module.css";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { validateEmail } from "../../utils/validators";
+import { NotificationContext } from "../../context/notification-context";
 
 function NewsletterRegistration() {
   const [error, setError] = useState("");
   const emailRef = useRef();
+  const { showNotification, hideNotification } = useContext(
+    NotificationContext
+  );
+
   function registrationHandler(event) {
     event.preventDefault();
 
@@ -16,18 +21,42 @@ function NewsletterRegistration() {
       return 1;
     }
 
+    showNotification({
+      title: "Signing up",
+      status: "pending",
+      message: "Registering news letter"
+    });
+
     axios
       .post("/api/news-letter", {
         email
       })
       .then(({ data }) => {
         emailRef.current.value = "";
-        console.log(data);
+        showNotification({
+          title: "Signed up for " + email,
+          status: "success",
+          message: data.msg
+        });
+        clearNotiTimeout();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        showNotification({
+          title: "Signed up failed with " + email,
+          status: "error",
+          message: err.msg
+        });
+        clearNotiTimeout();
+      });
 
     return 0;
   }
+
+  const clearNotiTimeout = () => {
+    setTimeout(() => {
+      hideNotification();
+    }, 5000);
+  };
 
   return (
     <section className={classes.newsletter}>
